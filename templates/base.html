@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Flask App</title>
+    <style>
+        /* Basic styling for the navigation bar */
+        nav {
+            background-color: #333; /* Dark background color */
+            color: #fff; /* Text color */
+            padding: 10px;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        nav li {
+            float: left;
+        }
+        nav li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        nav li a:hover {
+            background-color: #ddd; /* Light background color on hover */
+            color: #333; /* Text color on hover */
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/hello">Hello</a></li>
+	    <li><a href="/about">About</a></li>
+	    <li><a href="/graphs">Graphs</a></li>
+	    <li><a href="/paybills">Pay Bills</a></li>
+	    <li><a href="/appointment">Make An Appointment</a></li>
+
+        </ul>
+    </nav>
+    {% block content %}{% endblock %}
+</body>
+</html>
