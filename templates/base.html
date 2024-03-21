@@ -31,19 +31,39 @@
             background-color: #ddd; /* Light background color on hover */
             color: #333; /* Text color on hover */
         }
+        /* Highlight active link */
+        nav li a.active {
+            background-color: #ddd; /* Light background color for active link */
+            color: #333; /* Text color for active link */
+        }
+        /* Basic styling for the footer */
+        footer {
+            background-color: #333; /* Dark background color */
+            color: #fff; /* Text color */
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-	    <li><a href="/about">About</a></li>
-	    <li><a href="/graphs">Graphs</a></li>
-	    <li><a href="/paybills">Pay Bills</a></li>
-	    <li><a href="/appointment">Make An Appointment</a></li>
-
+            <li><a href="/" {% if request.path == '/' %}class="active"{% endif %}>Home</a></li>
+            <li><a href="/about" {% if request.path == '/about' %}class="active"{% endif %}>About</a></li>
+            <li><a href="/graphs" {% if request.path == '/graphs' %}class="active"{% endif %}>Graphs</a></li>
+            <li><a href="/pay" {% if request.path == '/pay' %}class="active"{% endif %}>Pay Bills</a></li>
+            <li><a href="/appt" {% if request.path == '/appt' %}class="active"{% endif %}>Make An Appointment</a>
+            <li><a href="/login" {% if request.path == '/login' %}class="active"{% endif %}>Login</a>
+            <li><a href="/register" {% if request.path == '/register' %}class="active"{% endif %}>Register</a>
+</li>
         </ul>
     </nav>
     {% block content %}{% endblock %}
+    <footer>
+        &copy; 2024 My Flask App. All rights reserved.
+    </footer>
 </body>
 </html>
