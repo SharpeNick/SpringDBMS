@@ -2,8 +2,11 @@ CREATE DATABASE CLINICPROJECT;
 USE CLINICPROJECT;
 
 
-CREATE TABLE Patient_Information (
-    Patient_ID INT PRIMARY KEY,
+-- Adjust the Patient_Information table to include personal details and contact information
+CREATE TABLE New_Patient_Information (
+    Patient_ID INT AUTO_INCREMENT PRIMARY KEY,
+    FName VARCHAR(50),
+    LName VARCHAR(50),
     Height INT,
     Weight INT,
     Age INT,
@@ -13,85 +16,37 @@ CREATE TABLE Patient_Information (
     Symptoms TEXT,
     Reason_for_visit TEXT,
     Last_Reason_for_visit TEXT,
-    Doctor_in_care INT
-);
-CREATE TABLE Nurse_Form (
-    Patient_ID INT PRIMARY KEY,
-    Height INT,
-    Weight INT,
-    Age INT,
-    Gender VARCHAR(50),
-    Blood_Pressure INT,
-    Medication TEXT,
-    Symptoms TEXT,
     Doctor_in_care INT,
-    FOREIGN KEY (Patient_ID) REFERENCES Patient_Information(Patient_ID)
-);
-
--- Create Insurance table
-CREATE TABLE Insurance (
-    Insurance_Name INT PRIMARY KEY,
-    Policy_Number INT,
-    Covered BOOLEAN,
-    Deductible INT
-);
-
--- Create Patient table
-CREATE TABLE Patient (
-    Patient_ID INT PRIMARY KEY,
-    FName VARCHAR(50),
-    LName VARCHAR(50),
-    Insurance_Name INT,
-    Covered BOOLEAN,
+    Insurance_Name INT,  -- Assuming a foreign key to the Insurance table
     Phone INT,
     Address VARCHAR(255),
     EContact_Name VARCHAR(50),
     EContact_Phone INT,
-    FOREIGN KEY (Insurance_Name) REFERENCES Insurance(Insurance_Name)
+    Email VARCHAR(255) UNIQUE NOT NULL,  -- To look up and communicate with patients
+    FOREIGN KEY (Insurance_Name) REFERENCES Insurance(Insurance_Name),
+    FOREIGN KEY (Doctor_in_care) REFERENCES Employee(Employee_ID)
 );
 
--- Create Employee table
-CREATE TABLE Employee (
-    Employee_ID INT PRIMARY KEY,
-    Position VARCHAR(50),
-    FName VARCHAR(50),
-    LName VARCHAR(50),
-    HiredDate DATE,
-    PTO INT,
-    Sick_Days INT
-);
+-- Remove the separate Patient table as its contents have been merged into Patient_Information
+-- ...
 
--- Create Employee_schedule table
-CREATE TABLE Employee_schedule (
-    Employee_ID INT,
-    Date DATE,
-    Time TIME,
-    FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID)
-);
-
--- Create Schedule table
-CREATE TABLE Schedule (
+-- Create a User_Account table for managing login credentials
+CREATE TABLE User_Account (
+    User_ID INT AUTO_INCREMENT PRIMARY KEY,
     Patient_ID INT,
-    Employee_ID INT,
-    Date DATE,
-    Time TIME,
-    Type_of_visit VARCHAR(50),
-    FOREIGN KEY (Patient_ID) REFERENCES Patient(Patient_ID),
-    FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID)
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    Password_Hash CHAR(60) NOT NULL,  -- CHAR(60) is typical for bcrypt hashes
+    FOREIGN KEY (Patient_ID) REFERENCES Patient_Information(Patient_ID)
 );
 
--- Create PatientForm table (assuming it's separate from Patient_Information)
-CREATE TABLE PatientForm (
-    FName VARCHAR(50),
-    LName VARCHAR(50),
-    Insurance_Name VARCHAR(50),
-    Phone INT,
-    Address VARCHAR(255),
-    EContact_Name VARCHAR (50),
-EContact_Phone INT,
-Reason_For_Visit TEXT,
-Date DATE,
-Time TIME,
-Type_Of_Visit VARCHAR(50)
+-- Create a table for Appointments, replacing Schedule if it is used for this purpose
+CREATE TABLE Appointments (
+    Appointment_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Patient_ID INT,
+    Employee_ID INT,  -- Presumably the ID of the doctor or staff member
+    Appointment_Date DATE,
+    Appointment_Time TIME,
+    Type_Of_Visit VARCHAR(50),
+    FOREIGN KEY (Patient_ID) REFERENCES Patient_Information(Patient_ID),
+    FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID)
 );
-    
