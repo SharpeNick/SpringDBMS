@@ -2,6 +2,91 @@
 
 {% block content %}
     <h1>Metrics Page</h1>
-    <p1>Show cool graphs</p1>
-    <p1></p1>
+    <p>Showcasing Healthcare Metrics</p>
+    
+    <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+        <div>
+            <h2>Number of Patients by Age Group</h2>
+            <canvas id="ageChart" width="700" height="300"></canvas>
+        </div>
+        <div>
+            <h2>Blood Pressure Distribution</h2>
+            <canvas id="bpChart" width="400" height="300"></canvas>
+        </div>
+    </div>
+    
+    <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+        <div>
+            <h2>Body Mass Index (BMI) Trends</h2>
+            <canvas id="bmiChart" width="400" height="300"></canvas>
+        </div>
+        <div>
+            <h2>Common Health Conditions</h2>
+            <canvas id="conditionChart" width="400" height="300"></canvas>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Generate some sample data
+        var ageData = {
+            labels: ["0-18", "19-35", "36-50", "51-65", "66+"],
+            datasets: [{
+                label: 'Number of Patients',
+                data: [120, 180, 220, 150, 90],
+                backgroundColor: '#36a2eb'
+            }]
+        };
+
+        var bpData = {
+            labels: ["Low", "Normal", "High"],
+            datasets: [{
+                label: 'Blood Pressure Distribution',
+                data: [25, 50, 30],
+                backgroundColor: ['#ff6384', '#36a2eb', '#ffce56']
+            }]
+        };
+
+        var bmiData = {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            datasets: [{
+                label: 'BMI',
+                data: [22, 23, 24, 25, 26, 27],
+                borderColor: '#ff6384',
+                fill: false
+            }]
+        };
+
+        var conditionData = {
+            labels: ["Diabetes", "Hypertension", "Asthma", "Obesity", "Arthritis"],
+            datasets: [{
+                label: 'Common Health Conditions',
+                data: [30, 25, 15, 20, 10],
+                backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#8d6e63', '#66bb6a']
+            }]
+        };
+
+        // Render charts
+        var ageChart = new Chart(document.getElementById('ageChart'), {
+            type: 'bar',
+            data: ageData
+        });
+
+        var bpChart = new Chart(document.getElementById('bpChart'), {
+            type: 'pie',
+            data: bpData
+        });
+
+        var bmiChart = new Chart(document.getElementById('bmiChart'), {
+            type: 'line',
+            data: bmiData
+        });
+
+        var conditionChart = new Chart(document.getElementById('conditionChart'), {
+            type: 'horizontalBar',
+            data: conditionData
+        });
+    </script>
 {% endblock %}
