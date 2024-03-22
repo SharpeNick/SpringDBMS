@@ -4,16 +4,16 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Global97051!@localhost/CLINICPROJECT'
+username = 'root'
+password = 'password'
+userpass = 'mysql+pymysql://' + username + ':' + password + '@'
+server   = 'localhost'
+dbname   = '/clinicproject'
+
+# put them all together as a string that shows SQLAlchemy where the database is
+app.config['SQLALCHEMY_DATABASE_URI'] = userpass + server + dbname 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # to suppress a warning
 db = SQLAlchemy(app)
-
-
-
-
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
 
 class PatientInformation(db.Model):
     __tablename__ = 'Patient_Information'
@@ -94,10 +94,12 @@ class Schedule(db.Model):
     Time = db.Column(db.Time, primary_key=True)
     Type_of_visit = db.Column(db.String(50))
 
-
-
-
-
+class User_Account(db.Model):
+    __tablename__ = 'User_Account'
+    User_ID = db.Column(db.Integer,primary_key=True)
+    Patient_ID = db.Column(db.Integer)
+    Username = db.Column(db.String(50))
+    Password_Hash = db.Column(db.String(60))
 
 
 @app.route('/add_patient', methods=['POST'])
@@ -144,6 +146,15 @@ def edit_patient(patient_id):
 
 @app.route("/")
 def hello_world():
+    new = User_Account()
+    new.Username = "test"
+    new.Patient_ID = 54
+    new.Password_Hash = 8454
+    db.session.add(new)
+    db.session.commit()
+    user = User_Account.query.get(2)
+    if user:
+        print(user)
     return render_template('index.html')
 
 @app.route('/about')
