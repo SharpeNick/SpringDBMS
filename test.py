@@ -1,6 +1,6 @@
 from flask import render_template
 from flask import request, jsonify
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from flask import request
@@ -37,19 +37,25 @@ def test():
     print(result)
     return render_template('test.html')
     
-@app.route("/testsubmit", methods=['POST'])
+@app.route("/testsubmit", methods=['GET','POST'])
 def testsubmit():
-    first = request.form.get("fname")
-    last = request.form.get("lname")
-    user = User(first, last)
-    try:
-        db.session.add(user)
-        db.session.commit()
+    if request.method == 'POST':
+        first = request.form.get("fname")
+        last = request.form.get("lname")
+        user = User(first, last)
+        try:
+            db.session.add(user)
+            db.session.commit()
 
-        result = User.query.all()
-        for user in result:
-            print(user)
-        return jsonify(message='User added successfully'), 201
-    except Exception as e:
-        print("Problem inserting into db: " + str(e))
-        return False
+            result = User.query.all()
+            for user in result:
+                print(user)
+            return redirect(url_for("testpatients"))
+        except Exception as e:
+            print("Problem inserting into db: " + str(e))
+            return False
+    
+@app.route("/testpatients", methods=['GET'])
+def testpatients():
+    result = User.query.all()
+    return render_template("/testpatients.html", results = result )

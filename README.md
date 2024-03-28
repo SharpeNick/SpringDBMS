@@ -26,4 +26,4 @@ For this project, we also created a simple script to test/debug database connect
 2. open test.py and modify the username, password, server, and dbname variable to match the database
 3. launch the test application using the command: flask --app test run --debug
 4. If all the above code worked, you should be able to see your code here: http://127.0.0.1:5000/
-5. Fill in the two text fields with anything and click submit. You'll recieve a message letting you know if the connection was successful or not and all data in the database will be printed to the console
+5. Fill in the two text fields with anything and click submit. You'll be redirected to a new webpage that will display all the users stored in the database

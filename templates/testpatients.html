@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for result in results %}
+        <div>Patient Name: {{result['fname']}}</div>
+    {% endfor %}
+{% endblock %}

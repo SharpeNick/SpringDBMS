@@ -146,15 +146,6 @@ def edit_patient(patient_id):
 
 @app.route("/")
 def hello_world():
-    new = User_Account()
-    new.Username = "test"
-    new.Patient_ID = 54
-    new.Password_Hash = 8454
-    db.session.add(new)
-    db.session.commit()
-    user = User_Account.query.get(2)
-    if user:
-        print(user)
     return render_template('index.html')
 
 @app.route('/about')
