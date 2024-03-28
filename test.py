@@ -9,11 +9,10 @@ app = Flask(__name__)
 #modify theses to match the database you want to test
 username = 'root'
 password = 'password'
-userpass = 'mysql+pymysql://' + username + ':' + password + '@'
 server   = 'localhost'
 dbname   = '/testdb'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = userpass + server + dbname 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + username + ':' + password + '@' + server + dbname 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # to suppress a warning
 db = SQLAlchemy(app)
 
