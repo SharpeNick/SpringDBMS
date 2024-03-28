@@ -46,10 +46,6 @@ def testsubmit():
         try:
             db.session.add(user)
             db.session.commit()
-
-            result = User.query.all()
-            for user in result:
-                print(user)
             return redirect(url_for("testpatients"))
         except Exception as e:
             print("Problem inserting into db: " + str(e))
