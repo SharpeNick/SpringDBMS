@@ -1,9 +1,5 @@
-from flask import render_template
-from flask import request, jsonify
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import text
-from flask import request
 
 app = Flask(__name__)
 #modify theses to match the database you want to test
@@ -29,12 +25,9 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<first={self.fname}, last={self.lname}>"
-
-
+    
 @app.route("/")
 def test():
-    result = User.query.get(1)
-    print(result)
     return render_template('test.html')
     
 @app.route("/testsubmit", methods=['GET','POST'])
