@@ -1,6 +1,84 @@
 {% extends "base.html" %}
 
+{% block header %}
+    <style>
+        .carousel-container {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.carousel {
+    display: flex;
+    overflow-x: hidden;
+    width: 100%; /* Set the width to 100% */
+    height: 300px; /* Set a fixed height for the carousel */
+}
+
+.carousel img {
+    width: 50%; /* Set the width of each image to 50% */
+    height: 100%; /* Set the height to 100% to fill the container */
+    object-fit: cover; /* Ensure the image covers the entire container */
+}
+
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.prev {
+    left: 10px; /* Adjust position as needed */
+}
+
+.next {
+    right: 10px; /* Adjust position as needed */
+}
+    </style>
+
+    <script>
+       let slideIndex = 0;
+
+function moveSlide(n) {
+    const slides = document.querySelector('.carousel');
+    slideIndex += n;
+    if (slideIndex >= slides.children.length) {
+        slideIndex = 0;
+    }
+    if (slideIndex < 0) {
+        slideIndex = slides.children.length - 1;
+    }
+    slides.style.transform = `translateX(-${slideIndex * 100}%)`;
+}
+    </script>
+{% endblock %}
+
 {% block content %}
-    <h1>Welcome to our healthcare homepage!</h1>
-    <p>Please like us on social media!</p>
+    <div class="homepage-container">
+        <div class="carousel-container">
+            <div class="carousel">
+                <img src="https://media.istockphoto.com/id/1346227626/photo/cheerful-medical-students-taking-selfie-and-having-fun-at-the-university.jpg?s=612x612&w=0&k=20&c=TLzxb3dvvctQtgY8J5b6NNO58iluoalL_zb9r7Nqapk=">
+
+                <img src="https://media.istockphoto.com/id/998313080/photo/smiling-medical-team-standing-together-outside-a-hospital.jpg?s=612x612&w=0&k=20&c=fXzbjAoStQ_8jTM4TQxbHBEjhETI3vq5_7d_JL19eCA=">
+                <!--  <img src="https://thumbs.dreamstime.com/b/african-nurse-senior-patient-beautiful-taking-care-wheelchair-33292186.jpg">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/019/048/803/small/happy-patient-is-holding-caregiver-for-a-hand-while-spending-time-together-elderly-woman-in-nursing-home-and-nurse-photo.jpg">
+                <img src="https://media.istockphoto.com/id/687663798/photo/dentists-office-in-barcelona-medical-workers-portrait.jpg?s=612x612&w=0&k=20&c=1gLaVHRqTI4dzDEEAwhe_hBFyBgymj-7P6w1z3LSppw=">
+                <img src="https://media.istockphoto.com/id/1346124946/photo/portrait-of-friendly-nurse-smiling-at-hospital.jpg?s=612x612&w=0&k=20&c=jzRhJlAsoSJ0QxJiWpLb2wZbyDqBpR16zoOUPyuiGq4=">
+            </div>
+            <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+            <button class="next" onclick="moveSlide(1)">&#10095;</button>
+-->
+        </div>
+        <div class="homepage-content">
+            <h1>Welcome to our healthcare homepage!</h1>
+            <p>Please like us on social media!</p>
+        </div>
+    </div>
 {% endblock %}
