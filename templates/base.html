@@ -76,7 +76,7 @@
             {% else %}
             <li><a href="/login" {% if request.path == '/login' %}class="active"{% endif %}>Login</a>
             <li><a href="/register" {% if request.path == '/register' %}class="active"{% endif %}>Register</a>
-</li>
+            </li>
         </ul>
     </nav>
     {% block content %}{% endblock %}
