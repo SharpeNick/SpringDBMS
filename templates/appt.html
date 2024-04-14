@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Welcome! Here to make an appointment? You've come to the right place</h1>
-    <form id="addPatientForm">
+    <div style="max-width: 700px; margin: auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 style="text-align: center;">Welcome! Here to make an appointment? You've come to the right place</h1>
+    <form id="addPatientForm" action="/add_patient" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+    
         <input type="text" name="fname" placeholder="First Name" required>
         <input type="text" name="lname" placeholder="Last Name" required>
         <input type="email" name="email" placeholder="Email" required>
@@ -16,8 +18,19 @@
         <input type="text" name="reason_for_visit" placeholder="Reason for Visit" required>
         <!-- Implement a date picker for appointment -->
         <input type="date" name="appointment_date" required>
+        <input type="number" name="height" placeholder="Height (in centimeters)" required>
+        <input type="number" name="weight" placeholder="Weight (in kilograms)" required>
+        <input type="text" name="blood_pressure" placeholder="Blood Pressure (e.g., 120/80)" required>
+        <input type="text" name="medication" placeholder="Current Medications" required>
+        <textarea name="symptoms" placeholder="Symptoms" rows="4" required></textarea>
+        <input type="text" name="doctor_in_care" placeholder="Doctor in Care" required>
+        
+        <!-- Appointment date field -->
+        <input type="date" name="appointment_date" required>
+        <button type="submit" style="margin-top: 10px;">Submit</button>
         <button type="submit">Submit</button>
     </form>
+  </div>  
 {% endblock %}
 
 
