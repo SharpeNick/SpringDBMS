@@ -1,47 +1,7 @@
 {% extends "base.html" %}
 
 {% block header %}
-    <style>
-        .carousel-container {
-    position: relative;
-    max-width: 100%;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
 
-.carousel {
-    display: flex;
-    overflow-x: hidden;
-    width: 100%; /* Set the width to 100% */
-    height: 300px; /* Set a fixed height for the carousel */
-}
-
-.carousel img {
-    width: 50%; /* Set the width of each image to 50% */
-    height: 100%; /* Set the height to 100% to fill the container */
-    object-fit: cover; /* Ensure the image covers the entire container */
-}
-
-.prev, .next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    z-index: 1;
-}
-
-.prev {
-    left: 10px; /* Adjust position as needed */
-}
-
-.next {
-    right: 10px; /* Adjust position as needed */
-}
-    </style>
 
     <script>
        let slideIndex = 0;

@@ -4,57 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FriendlyCare Clinic - Your Health, Our Priority</title>
-    <style>
-        /* Basic styling for the navigation bar */
-        nav {
-            background-color: #50C878; /* Comforting shade of green */
-            color: #fff; /* Text color */
-            padding: 10px;
-        }
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        nav li {
-            float: left;
-        }
-        nav li a {
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-        }
-        nav li a:hover {
-            background-color: #a7c99d; /* Lighter background color on hover */
-            color: #fff; /* Text color on hover */
-        }
-        /* Highlight active link */
-        nav li a.active {
-            background-color: #a7c99d; /* Lighter background color for active link */
-            color: #fff; /* Text color for active link */
-        }
-        /* Basic styling for the footer */
-        footer {
-            background-color: #8db580; /* Comforting shade of green */
-            color: #fff; /* Text color */
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-        }
 
-        /* Background color for content area */
-        body {
-            background-color: #f0f0f0; /* Soft, calming background color */
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-    </style>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='/base.css') }}">
     <title>My Flask App</title>
     
@@ -71,9 +21,6 @@
             <li><a href="/graphs" {% if request.path == '/graphs' %}class="active"{% endif %}>Graphs</a></li>
             <li><a href="/pay" {% if request.path == '/pay' %}class="active"{% endif %}>Pay Bills</a></li>
             <li><a href="/appt" {% if request.path == '/appt' %}class="active"{% endif %}>Make An Appointment</a>
-            {% if current_user.is_authenticated %}
-            <li><a href="/logout" {% if request.path == '/logout' %}class="active"{% endif %}>Log Out</a>
-            {% else %}
             <li><a href="/login" {% if request.path == '/login' %}class="active"{% endif %}>Login</a>
             <li><a href="/register" {% if request.path == '/register' %}class="active"{% endif %}>Register</a>
             </li>
