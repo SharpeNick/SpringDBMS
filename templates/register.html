@@ -2,6 +2,37 @@
 
 {% block content %}
     <h1>Register</h1>
-    <p>Already have an account? Click here Login button</p>
-    <p>Important user Information</p>
+    <form id="RegisterForm" method="POST">
+        {{ form.hidden_tag() }}
+        {{form.fname.label}}
+        {{form.fname()}}
+        <br>
+        {{form.lname.label}}
+        {{form.lname()}}
+        <br>
+        {{form.email.label}}
+        {{form.email()}}
+        <br>
+        {{form.password.label}}
+        {{form.password()}}
+        <br>
+        {{form.confirm_password.label}}
+        {{form.confirm_password()}}
+        <br>
+        {{form.submit}}
+    </form>
+    <br>
+    <h2>Current Users</h2>
+    <table>
+        <tr>
+            <th>first name</th>
+            <th>last name</th>
+        </tr>
+        {% for result in results %}
+            <tr>
+                <td>{{ result['FName'] }}</td>
+                <td> {{ result['LName'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

@@ -15,8 +15,12 @@
             <li><a href="/graphs" {% if request.path == '/graphs' %}class="active"{% endif %}>Graphs</a></li>
             <li><a href="/pay" {% if request.path == '/pay' %}class="active"{% endif %}>Pay Bills</a></li>
             <li><a href="/appt" {% if request.path == '/appt' %}class="active"{% endif %}>Make An Appointment</a>
+            {% if current_user.is_authenticated %}
+            <li><a href="/logout" {% if request.path == '/logout' %}class="active"{% endif %}>Log Out</a>
+            {% else %}
             <li><a href="/login" {% if request.path == '/login' %}class="active"{% endif %}>Login</a>
             <li><a href="/register" {% if request.path == '/register' %}class="active"{% endif %}>Register</a>
+            {% endif %}
 </li>
         </ul>
     </nav>
