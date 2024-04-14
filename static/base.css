@@ -1,0 +1,41 @@
+/* Basic styling for the navigation bar */
+nav {
+    background-color: #333; /* Dark background color */
+    color: #fff; /* Text color */
+    padding: 10px;
+}
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+nav li {
+    float: left;
+}
+nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+nav li a:hover {
+    background-color: #ddd; /* Light background color on hover */
+    color: #333; /* Text color on hover */
+}
+/* Highlight active link */
+nav li a.active {
+    background-color: #ddd; /* Light background color for active link */
+    color: #333; /* Text color for active link */
+}
+/* Basic styling for the footer */
+footer {
+    background-color: #333; /* Dark background color */
+    color: #fff; /* Text color */
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}

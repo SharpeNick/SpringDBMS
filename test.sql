@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS TestDB;
+USE TestDB;
+
+CREATE TABLE IF NOT EXISTS Users(
+	ID INT AUTO_INCREMENT PRIMARY KEY,
+    fname VARCHAR(50),
+    lname VARCHAR(50));
+    
+INSERT INTO Users ( fname, lname) VALUES 
+('nate', 'fennimore');
