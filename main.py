@@ -141,9 +141,12 @@ def graphs():
 def pay():
     form = PaymentForm()
     patient = Patient.query.filter_by(Paitent_Acct=current_user.get_id()).first()
+    print(form.validate_on_submit())
     if form.validate_on_submit():
-        patient.Current_Balance = patient.Current_balance - float(form.pay_amount.data)
-        db.commit()
+        patient.Current_Balance = patient.Current_Balance - float(form.pay_amount.data)
+        print( patient.Current_Balance)
+        db.session.commit()
+        return redirect(url_for("index"))
     
     return render_template('pay.html', form = form, patient = patient, user = current_user)
 

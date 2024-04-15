@@ -6,6 +6,7 @@
     <div style="margin: auto; max-width: 400px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
         <p>Patient Name: {{user.FName}} {{user.LName}}</p>
         <p>Patient ID: {{patient.Patient_ID}}</p>
+        <p>Current Balance: {{patient.Current_Balance}}</p>
         <form method="POST">
             {{form.hidden_tag()}}
             {{form.payment_method.label}}

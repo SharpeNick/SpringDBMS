@@ -30,3 +30,4 @@ class PaymentForm(FlaskForm):
     payment_options = ["Credit Card", "Bank Transfer", "PayPal", "Cash"]
     payment_method = SelectField("Payment Method:", choices = payment_options, validators=[DataRequired()])
     pay_amount = FloatField("Payment Amount:", validators=[NumberRange(min=0)])
+    submit = SubmitField("Submit Payment")
