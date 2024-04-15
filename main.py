@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
+from wtforms import StringField, SubmitField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Email
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -40,7 +40,12 @@ class RegisterForm(FlaskForm):
     lname = StringField("Last Name:", validators=[DataRequired()])
     email = StringField("Email Address:", validators=[DataRequired(), Email()])
     password = PasswordField("Password:", validators=[DataRequired()])
-    confirm_password = PasswordField("Confirm Password:", validators=[DataRequired()])
+    insurance = StringField("Insurance Name:", validators=[DataRequired()])
+    policy_num = IntegerField("Policy Number:", validators=[DataRequired()])
+    phone = StringField("Phone Number:", validators=[DataRequired()])
+    address = StringField("Address:", validators=[DataRequired()])
+    econtact = StringField("Emergency Contact:", validators=[DataRequired()])
+    econtact_phone = StringField("Emergency Contact Number:", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 # DB Models
@@ -77,44 +82,31 @@ class PatientInformation(db.Model):
     Symptoms = db.Column(db.Text)
     Reason_for_visit = db.Column(db.Text)
     Last_Reason_for_visit = db.Column(db.Text)
-    Doctor_in_care = db.Column(db.Integer, db.ForeignKey('Employee.Employee_ID'))
-    
-    # Assuming a one-to-one relationship with Nurse_Form
-    nurse_form = db.relationship('NurseForm', backref='patient_information', uselist=False)
-
-class NurseForm(db.Model):
-    __tablename__ = 'Nurse_Form'
-    Patient_ID = db.Column(db.Integer, db.ForeignKey('Patient_Information.Patient_ID'), primary_key=True)
-    Height = db.Column(db.Integer)
-    Weight = db.Column(db.Integer)
-    Age = db.Column(db.Integer)
-    Gender = db.Column(db.String(50))
-    Blood_Pressure = db.Column(db.Integer)
-    Medication = db.Column(db.Text)
-    Symptoms = db.Column(db.Text)
     Doctor_in_care = db.Column(db.Integer)
-
-class Insurance(db.Model):
-    __tablename__ = 'Insurance'
-    Insurance_Name = db.Column(db.Integer, primary_key=True)
-    Policy_Number = db.Column(db.Integer)
-    Covered = db.Column(db.Boolean)
-    Deductible = db.Column(db.Integer)
-    
-    # Assuming a one-to-many relationship with Patient
-    patients = db.relationship('Patient', backref='insurance')
 
 class Patient(db.Model):
     __tablename__ = 'Patient'
-    Patient_ID = db.Column(db.Integer, db.ForeignKey('Patient_Information.Patient_ID'), primary_key=True)
+    Patient_ID = db.Column(db.Integer, primary_key=True)
     FName = db.Column(db.String(50))
     LName = db.Column(db.String(50))
-    Insurance_Name = db.Column(db.Integer, db.ForeignKey('Insurance.Insurance_Name'))
+    Insurance_Name = db.Column(db.String(255))
+    Policy_Number = db.Column(db.Integer)
     Covered = db.Column(db.Boolean)
-    Phone = db.Column(db.Integer)
+    Phone = db.Column(db.String(15))
     Address = db.Column(db.String(255))
     EContact_Name = db.Column(db.String(50))
-    EContact_Phone = db.Column(db.Integer)
+    EContact_Phone = db.Column(db.String(15))
+
+    def __init__(self, fname, lname, insurance, policy_num, phone, address, econtact, econ_num):
+        self.FName = fname
+        self.LName = lname
+        self.Insurance_Name = insurance
+        self.Policy_Number = policy_num
+        self.Phone = phone
+        self.Address = address
+        self.EContact_Name = econtact
+        self.EContact_Phone = econ_num
+
 
 class Employee(db.Model):
     __tablename__ = 'Employee'
@@ -125,10 +117,6 @@ class Employee(db.Model):
     HiredDate = db.Column(db.Date)
     PTO = db.Column(db.Integer)
     Sick_Days = db.Column(db.Integer)
-    
-    # Relationships with PatientInformation and Employee_schedule
-    patients_in_care = db.relationship('PatientInformation', backref='doctor')
-    schedules = db.relationship('EmployeeSchedule', backref='employee')
 
 class EmployeeSchedule(db.Model):
     __tablename__ = 'Employee_schedule'
@@ -144,11 +132,11 @@ class Schedule(db.Model):
     Time = db.Column(db.Time, primary_key=True)
     Type_of_visit = db.Column(db.String(50))
 
-#with app.app_context():
-    #db.create_all()
+with app.app_context():
+    db.create_all()
 
 @app.route("/")
-def hello_world():
+def index():
     return render_template('index.html')
 
 @app.route('/about')
@@ -169,17 +157,22 @@ def appt():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    #validation
     form = LoginForm()
     if form.validate_on_submit():
+        #check if user exists with that email address
         user = User.query.filter_by(Email=form.email.data).first()
         if user:
+            #check if password is correct
             if check_password_hash(user.Password_Hash, form.password.data):
                 login_user(user)
-                return redirect(url_for("hello_world"))
+                return redirect(url_for("index"))
+            #redirect if password is incorrect
             else:
+                print("incorrect password")
                 return redirect(url_for("login"))
+        #redirect if email not linked to account
         else:
+            print("email not found")
             return redirect(url_for("login"))
         
     return render_template('login.html',
@@ -193,13 +186,9 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    email = None
-    fname = None
-    lname = None
-    password = None
-    confirm_password = None
     form = RegisterForm()
-    
+    print(form.validate_on_submit())
+    print(form.errors)
     if form.validate_on_submit():
         #check if user already exists
         user = User.query.filter_by(Email=form.email.data).first()
@@ -208,60 +197,20 @@ def register():
             hashed_pw = generate_password_hash(form.password.data)
             user = User(form.email.data, form.fname.data, form.lname.data, hashed_pw)
             db.session.add(user)
+            patient = Patient(form.fname.data, 
+                              form.lname.data, 
+                              form.insurance.data, 
+                              form.policy_num.data,
+                              form.phone.data,
+                              form.address.data,
+                              form.econtact.data,
+                              form.econtact_phone.data)
+            db.session.add(patient)
             db.session.commit()
-    #clear form data
-    email = form.email.data
-    form.email.data = ''
-    password = form.password.data
-    form.password.data = ''
-    confirm_password = form.confirm_password.data
-    form.confirm_password.data = ''
-    result = User.query.all()
-    return render_template('register.html',
-                           results = result,
-                           email = email,
-                           fname = fname,
-                           lname = lname,
-                           password = password,
-                           confirm_password = confirm_password,
-                           form = form)
-
-@app.route('/add_patient', methods=['POST'])
-def add_patient():
-    if request.method == 'POST':
-        # Assuming you're sending data via a form and using Flask's request to access it
-        fname = request.form.get('fname')
-        lname = request.form.get('lname')
-        # Create an instance of the Patient
-        new_patient = Patient(FName=fname, LName=lname)
-        # Add to the session and commit to the database
-        db.session.add(new_patient)
-        db.session.commit()
-        return jsonify(message='Patient added successfully'), 201
-
-@app.route('/delete_patient/<int:patient_id>', methods=['DELETE'])
-def delete_patient(patient_id):
-    # Query for the specific patient
-    patient_to_delete = Patient.query.get(patient_id)
-    if patient_to_delete:
-        db.session.delete(patient_to_delete)
-        db.session.commit()
-        return jsonify(message='Patient deleted successfully'), 200
-    else:
-        return jsonify(error='Patient not found'), 404
-    
-@app.route('/edit_patient/<int:patient_id>', methods=['PUT'])
-def edit_patient(patient_id):
-    # Query for the specific patient
-    patient = Patient.query.get(patient_id)
-    if patient:
-        patient.FName = request.form.get('fname', patient.FName)
-        patient.LName = request.form.get('lname', patient.LName)
-        # Add other fields as necessary
-        db.session.commit()
-        return jsonify(message='Patient updated successfully'), 200
-    else:
-        return jsonify(error='Patient not found'), 404
+            login_user(user)
+            return redirect(url_for('index'))
+        
+    return render_template('register.html', form = form)
 
 @app.route("/testusers", methods=['GET', 'POST'])
 @login_required
