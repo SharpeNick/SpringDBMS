@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="max-width: 400px; margin: auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <h1 style="text-align: center;">Register</h1>
+        <p style="text-align: center;">Already have an account? Click <a href="/login">here</a> to login.</p>
+        <p style="text-align: center;">Important user information...</p>
+        <form id="registerForm" method="POST">
+            {{form.hidden_tag()}}
+            {{form.email.label}}
+            {{form.email()}}
+            <br>
+            {{form.fname.label}}
+            {{form.fname()}}
+            <br>
+            {{form.lname.label}}
+            {{form.lname()}}
+            <br>
+            {{form.password.label}}
+            {{form.password()}}
+            <br>
+            {{form.submit}}            
+        </form>
+    </div>
+{% endblock %}

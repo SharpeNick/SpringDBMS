@@ -1,76 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div style="background-color: #f0f0f0; padding: 20px;">
-        <h1 style="text-align: center;">Pay Bills</h1>
-        <div style="margin: auto; max-width: 400px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-            <form id="paymentForm">
-                <label for="patientNumber">Patient Number:</label>
-                <input type="text" id="patientNumber" name="patientNumber" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
-                
-                <label for="name">Is this your name?</label>
-                <input type="text" id="name" name="name" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
-                
-                <p style="margin-bottom: 10px;">Your current balance: <span id="balance" style="font-weight: bold;">*Price Amount*</span></p>
-                
-                <label for="paymentMethod">Payment Method:</label>
-                <select id="paymentMethod" name="paymentMethod" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                    <option value="">Select Payment Method</option>
-                    <option value="creditCard">Credit Card</option>
-                    <option value="paypal">PayPal</option>
-                    <option value="bankTransfer">Bank Transfer</option>
-                </select><br>
-                
-                <label for="paymentAmount">Payment Amount:</label>
-                <input type="number" id="paymentAmount" name="paymentAmount" required style="width: 100%; padding: 8px; margin-bottom: 20px;"><br>
-                
-                <input type="submit" value="Submit Payment" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-            </form>
-        </div>
+<div style="background-color: #f0f0f0; padding: 20px;">
+    <h1 style="text-align: center;">Pay Bills</h1>
+    <div style="margin: auto; max-width: 400px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <p>Patient Name: {{user.FName}} {{user.LName}}</p>
+        <p>Patient ID: {{patient.Patient_ID}}</p>
+        <form method="POST">
+            {{form.hidden_tag()}}
+            {{form.payment_method.label}}
+            {{form.payment_method()}}
+            <br>
+            {{form.pay_amount.label}}
+            {{form.pay_amount()}}
+            <br>
+            {{form.submit}}  
+        </form>
     </div>
-{% endblock %}
-
-{% block scripts %}
-    <script>
-        document.getElementById("paymentForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            // Form validation
-            var patientNumber = document.getElementById("patientNumber").value;
-            var name = document.getElementById("name").value;
-            var paymentMethod = document.getElementById("paymentMethod").value;
-            var paymentAmount = document.getElementById("paymentAmount").value;
-            
-            if (!patientNumber || !name || !paymentMethod || !paymentAmount) {
-                alert("Please fill in all fields.");
-                return;
-            }
-            
-            // Example: Send payment information to backend for processing
-            // Replace this with your actual backend endpoint
-            fetch("/process_payment", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    patientNumber: patientNumber,
-                    name: name,
-                    paymentMethod: paymentMethod,
-                    paymentAmount: paymentAmount
-                })
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert("Payment successful!");
-                    // Optionally, redirect user to a success page
-                } else {
-                    alert("Payment failed. Please try again later.");
-                }
-            })
-            .catch(error => {
-                console.error("Error processing payment:", error);
-                alert("An error occurred while processing your payment. Please try again later.");
-            });
-        });
-    </script>
+</div>
 {% endblock %}

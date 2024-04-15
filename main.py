@@ -1,10 +1,9 @@
 from flask import request, jsonify, redirect, render_template, url_for
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from Create_DB import createDatabase
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, IntegerField
-from wtforms.validators import DataRequired, Email
+from Forms import RegisterAccountForm, RegisterPatientForm, LoginForm, PaymentForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
@@ -19,6 +18,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # to suppress a warning
 app.config['SECRET_KEY'] = "supersecretkey" #required for wtforms
 db = SQLAlchemy(app)
 
+# create db if it doesn't already exist
+conn_string = 'mysql+pymysql://' + username + ':' + password + '@' + server
+createDatabase(conn_string)
+
 # Login Setup
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -27,26 +30,6 @@ login_manager.login_view = '/login'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-
-# Forms
-class LoginForm(FlaskForm):
-    email = StringField("Email Address", validators=[DataRequired(), Email()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    submit = SubmitField("Submit")
-
-class RegisterForm(FlaskForm):
-    fname = StringField("First Name:", validators=[DataRequired()])
-    lname = StringField("Last Name:", validators=[DataRequired()])
-    email = StringField("Email Address:", validators=[DataRequired(), Email()])
-    password = PasswordField("Password:", validators=[DataRequired()])
-    insurance = StringField("Insurance Name:", validators=[DataRequired()])
-    policy_num = IntegerField("Policy Number:", validators=[DataRequired()])
-    phone = StringField("Phone Number:", validators=[DataRequired()])
-    address = StringField("Address:", validators=[DataRequired()])
-    econtact = StringField("Emergency Contact:", validators=[DataRequired()])
-    econtact_phone = StringField("Emergency Contact Number:", validators=[DataRequired()])
-    submit = SubmitField("Submit")
 
 # DB Models
 class User(db.Model, UserMixin):
@@ -57,6 +40,7 @@ class User(db.Model, UserMixin):
     LName = db.Column(db.String(50))
     Password_Hash = db.Column(db.String(255), nullable=False)
     Date_Added = db.Column(db.DateTime, default=datetime.now)
+    Patient_ID = db.Column(db.Integer, db.ForeignKey("Patient.Patient_ID"))
 
     def get_id(self):
         return self.User_ID
@@ -72,7 +56,7 @@ class User(db.Model, UserMixin):
 
 class PatientInformation(db.Model):
     __tablename__ = 'Patient_Information'
-    Patient_ID = db.Column(db.Integer, primary_key=True)
+    Patient_ID = db.Column(db.Integer, db.ForeignKey('Patient.Patient_ID'),primary_key=True)
     Height = db.Column(db.Integer)
     Weight = db.Column(db.Integer)
     Age = db.Column(db.Integer)
@@ -87,6 +71,8 @@ class PatientInformation(db.Model):
 class Patient(db.Model):
     __tablename__ = 'Patient'
     Patient_ID = db.Column(db.Integer, primary_key=True)
+    Paitent_Acct = db.Column(db.Integer, db.ForeignKey("User_Account.User_ID"))
+    Patient_Info = db.Column(db.Integer, db.ForeignKey("Patient_Information.Patient_ID"))
     FName = db.Column(db.String(50))
     LName = db.Column(db.String(50))
     Insurance_Name = db.Column(db.String(255))
@@ -96,8 +82,11 @@ class Patient(db.Model):
     Address = db.Column(db.String(255))
     EContact_Name = db.Column(db.String(50))
     EContact_Phone = db.Column(db.String(15))
+    Current_Balance = db.Column(db.Float, default=0.00)
 
-    def __init__(self, fname, lname, insurance, policy_num, phone, address, econtact, econ_num):
+
+    def __init__(self, user_account, fname, lname, insurance, policy_num, phone, address, econtact, econ_num):
+        self.Paitent_Acct = user_account
         self.FName = fname
         self.LName = lname
         self.Insurance_Name = insurance
@@ -106,7 +95,6 @@ class Patient(db.Model):
         self.Address = address
         self.EContact_Name = econtact
         self.EContact_Phone = econ_num
-
 
 class Employee(db.Model):
     __tablename__ = 'Employee'
@@ -132,6 +120,7 @@ class Schedule(db.Model):
     Time = db.Column(db.Time, primary_key=True)
     Type_of_visit = db.Column(db.String(50))
 
+# creates tables in the DB using models if they don't currently exist
 with app.app_context():
     db.create_all()
 
@@ -147,9 +136,16 @@ def about():
 def graphs():
     return render_template('graphs.html')
 
-@app.route('/pay')
+@app.route('/pay', methods=['GET', 'POST'])
+@login_required
 def pay():
-    return render_template('pay.html')
+    form = PaymentForm()
+    patient = Patient.query.filter_by(Paitent_Acct=current_user.get_id()).first()
+    if form.validate_on_submit():
+        patient.Current_Balance = patient.Current_balance - float(form.pay_amount.data)
+        db.commit()
+    
+    return render_template('pay.html', form = form, patient = patient, user = current_user)
 
 @app.route('/appt')
 def appt():
@@ -186,9 +182,11 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm()
-    print(form.validate_on_submit())
-    print(form.errors)
+        return redirect(url_for('registerAccount'))
+
+@app.route('/register_account', methods=['GET', 'POST'])
+def registerAccount():
+    form = RegisterAccountForm()
     if form.validate_on_submit():
         #check if user already exists
         user = User.query.filter_by(Email=form.email.data).first()
@@ -197,28 +195,32 @@ def register():
             hashed_pw = generate_password_hash(form.password.data)
             user = User(form.email.data, form.fname.data, form.lname.data, hashed_pw)
             db.session.add(user)
-            patient = Patient(form.fname.data, 
-                              form.lname.data, 
-                              form.insurance.data, 
-                              form.policy_num.data,
-                              form.phone.data,
-                              form.address.data,
-                              form.econtact.data,
-                              form.econtact_phone.data)
-            db.session.add(patient)
             db.session.commit()
             login_user(user)
-            return redirect(url_for('index'))
+            return redirect(url_for('registerPatient'))
         
-    return render_template('register.html', form = form)
+    return render_template('register_account.html', form = form)
 
-@app.route("/testusers", methods=['GET', 'POST'])
+@app.route('/register_patient', methods=['GET', 'POST'])
 @login_required
-def testusers():
-    result = User.query.all()
-    if result is None:
-        return redirect(url_for("login"))
-    return render_template("/testusers", results = result )
+def registerPatient():
+    form = RegisterPatientForm()
+    if form.validate_on_submit():
+        patient = Patient(current_user.User_ID,
+                            form.fname.data, 
+                            form.lname.data, 
+                            form.insurance.data, 
+                            form.policy_num.data,
+                            form.phone.data,
+                            form.address.data,
+                            form.econtact.data,
+                            form.econtact_phone.data)
+        db.session.add(patient)
+        db.session.commit()
+        return redirect(url_for('index'))
+        
+    return render_template('register_patient.html', form = form)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
