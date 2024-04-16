@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+#profile {
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<div id="profile">    
+    <h1>User Profile</h1>
+        <p>Email Address: {{ user.Email }}</p>
+        <p>First Name: {{ user.FName }}</p>
+        <p>Last Name: {{ user.LName }}</p>
+        <p>Insurance Name: {{ patient.Insurance_Name }}</p>
+        <p>Insurance Policy Number: {{patient.Policy_Number }}</p>
+        <p>Phone Number: {{ patient.Phone }}</p> 
+        <p>Address: {{ patient.Address }}</p>
+        <p>Emergency Contact Name: {{ patient.ECOntact_Name }}</p>
+        <p>Emergency Contact Phone: {{ patient.EContact_Phone }}</p>
+        <p>Current Account Balance: {{ patient.Account_Balance }}</p>
+        <a href="{{url_for('edit_profile')}}">Edit Profile</a>
+        <br>
+        <h2> My Appointments</h2>
+        {% if appts %}
+        {% for appt in appts %}
+            <p>{{appt}}</p>
+            {% endfor %}
+        {% else %}
+        <p>You have no scheduled appointments</p>
+        {% endif %}
+
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, IntegerField, FloatField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, IntegerField, FloatField, SelectField, TimeField, DateField
 from wtforms.validators import DataRequired, Email, NumberRange
 
 # Forms
@@ -31,3 +31,10 @@ class PaymentForm(FlaskForm):
     payment_method = SelectField("Payment Method:", choices = payment_options, validators=[DataRequired()])
     pay_amount = FloatField("Payment Amount:", validators=[NumberRange(min=0)])
     submit = SubmitField("Submit Payment")
+
+class AppointmentForm(FlaskForm):
+    reason_for_visit = TextAreaField("Reason for visit",validators=[DataRequired()])
+    appointment_date= DateField("Appointment Date",validators=[DataRequired()])
+    appointment_time = TimeField("Appointment Time",validators=[DataRequired()])
+    submit = SubmitField("Submit")
+

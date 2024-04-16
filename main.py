@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from Create_DB import createDatabase
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
-from Forms import RegisterAccountForm, RegisterPatientForm, LoginForm, PaymentForm
+from Forms import RegisterAccountForm, RegisterPatientForm, LoginForm, PaymentForm, AppointmentForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
@@ -95,6 +95,10 @@ class Patient(db.Model):
         self.Address = address
         self.EContact_Name = econtact
         self.EContact_Phone = econ_num
+        self.Current_Balance = 0.0
+
+    def get_id(self):
+        return self.Patient_ID
 
 class Employee(db.Model):
     __tablename__ = 'Employee'
@@ -120,6 +124,16 @@ class Schedule(db.Model):
     Time = db.Column(db.Time, primary_key=True)
     Type_of_visit = db.Column(db.String(50))
 
+    def __init__(self, patient, date, time, reason, ):
+        self.Patient_ID = patient
+        self.Employee_ID = 1 #placeholder value since employee functionality hasnt been implemented
+        self.Date = date
+        self.Time = time
+        self.Type_of_visit = reason
+
+    def __str__(self):
+        return f"Date: {self.Date}\tTime: {self.Time}"
+
 # creates tables in the DB using models if they don't currently exist
 with app.app_context():
     db.create_all()
@@ -141,7 +155,6 @@ def graphs():
 def pay():
     form = PaymentForm()
     patient = Patient.query.filter_by(Paitent_Acct=current_user.get_id()).first()
-    print(form.validate_on_submit())
     if form.validate_on_submit():
         patient.Current_Balance = patient.Current_Balance - float(form.pay_amount.data)
         print( patient.Current_Balance)
@@ -150,9 +163,17 @@ def pay():
     
     return render_template('pay.html', form = form, patient = patient, user = current_user)
 
-@app.route('/appt')
+@app.route('/appt', methods=['GET', 'POST'])
+@login_required
 def appt():
-    return render_template('appt.html')
+    form = AppointmentForm()
+    patient = Patient.query.filter_by(Paitent_Acct=current_user.get_id()).first()
+    if form.validate_on_submit():
+        appointment = Schedule(patient.get_id(),form.appointment_date.data, form.appointment_time.data, form.reason_for_visit.data)
+        db.session.add(appointment)
+        db.session.commit()
+        return redirect(url_for("appt"))
+    return render_template('appt.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -220,10 +241,37 @@ def registerPatient():
                             form.econtact_phone.data)
         db.session.add(patient)
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('profile'))
         
     return render_template('register_patient.html', form = form)
 
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    patient = Patient.query.filter_by(Paitent_Acct=current_user.get_id()).first()
+    appointments = Schedule.query.filter_by(Patient_ID=patient.get_id()).all()
+
+    return render_template('/profile.html', user = current_user, patient = patient, appts = appointments)
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    patient = Patient.query.filter_by(Paitent_Acct=current_user.get_id()).first()
+    appointments = Schedule.query.filter_by(Patient_ID=patient.get_id()).all()
+    form = RegisterPatientForm()
+    form.fname.data = current_user.FName
+    form.lname.data = current_user.LName
+    form.insurance.data = patient.Insurance_Name
+    form.policy_num.data = patient.Policy_Number
+    form.phone.data = patient.Phone
+    form.address.data = patient.Address
+    form.econtact.data = patient.EContact_Name
+    form.econtact_phone.data = patient.EContact_Phone
+    if form.validate_on_submit():
+        db.session.commit()
+        return redirect(url_for('profile'))
+
+    return render_template('/edit_profile.html', user = current_user, patient = patient, appts = appointments, form = form)
 
 if __name__ == '__main__':
     app.run(debug=True)

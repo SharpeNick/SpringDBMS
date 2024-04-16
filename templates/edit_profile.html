@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+#profile {
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<form id="profile" method="POST">
+    {{form.hidden_tag()}}
+    {{form.fname.label}}
+    {{form.fname()}}
+    <br>
+    {{form.lname.label}}
+    {{form.lname()}}
+    <br>
+    {{form.insurance.label}}
+    {{form.insurance()}}
+    <br>
+    {{form.policy_num.label}}
+    {{form.policy_num()}}
+    <br>
+    {{form.phone.label}}
+    {{form.phone()}}
+    <br>
+    {{form.address.label}}
+    {{form.address()}}
+    <br>
+    {{form.econtact.label}}
+    {{form.econtact()}}
+    <br>
+    {{form.econtact_phone.label}}
+    {{form.econtact_phone()}}
+    <br>
+    {{form.submit}}            
+</form>
+
+{% endblock %}
